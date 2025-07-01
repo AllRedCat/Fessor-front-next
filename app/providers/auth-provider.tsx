@@ -8,13 +8,8 @@ import React, {
   useEffect,
   useCallback,
 } from "react";
-import axios from "axios";
-import { useRouter } from "next/navigation";
-
-export const api = axios.create({
-  baseURL: "https://192.168.15.10:5006",
-  withCredentials: true, // Permite que o axios envie cookies
-});
+import { useRouter, usePathname } from "next/navigation";
+import { authAPI } from "@/app/lib/api";
 
 interface User {
   id: string;
@@ -25,6 +20,7 @@ interface User {
 interface AuthContextType {
   isAuthenticated: boolean;
   user: User | null;
+  isLoading: boolean;
   login: (data: any) => Promise<void>;
   logout: () => void;
   register: (data: any) => Promise<void>;
@@ -32,40 +28,95 @@ interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
+// Rotas que não precisam de autenticação
+const publicRoutes = ["/login", "/register"];
+
+// Rotas que precisam de autenticação
+const protectedRoutes = ["/home"];
+
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
   const router = useRouter();
+  const pathname = usePathname();
 
   const loadUserFromCookies = useCallback(async () => {
     try {
-      // Endpoint para buscar o usuário logado, usando o cookie de sessão
-      const { data } = await api.get("/auth/me");
-      if (data) setUser(data);
+      setIsLoading(true);
+      
+      // Endpoint correto para buscar o usuário logado
+      const data = await authAPI.me();
+      if (data) {
+        setUser(data);
+        console.log("Usuário carregado com sucesso:", data);
+      } else {
+        setUser(null);
+      }
     } catch (error) {
-      console.log("No active session");
+      console.log("No active session or error loading user:", error);
       setUser(null);
+    } finally {
+      setIsLoading(false);
     }
   }, []);
+
+  // Gerenciamento automático de rotas baseado na autenticação
+  useEffect(() => {
+    if (!isLoading) {
+      const isAuthenticated = !!user;
+      const isPublicRoute = publicRoutes.includes(pathname);
+      const isProtectedRoute = protectedRoutes.includes(pathname);
+      const isRootRoute = pathname === "/";
+
+      if (isRootRoute) {
+        // Página raiz: redireciona baseado na autenticação
+        if (isAuthenticated) {
+          router.push("/home");
+        } else {
+          router.push("/login");
+        }
+      } else if (isProtectedRoute && !isAuthenticated) {
+        // Tentativa de acessar rota protegida sem autenticação
+        router.push("/login");
+      } else if (isPublicRoute && isAuthenticated) {
+        // Usuário autenticado tentando acessar página de login/registro
+        router.push("/home");
+      }
+    }
+  }, [isLoading, user, pathname, router]);
 
   useEffect(() => {
     loadUserFromCookies();
   }, [loadUserFromCookies]);
 
   const login = async (data: any) => {
-    await api.post("/auth/login", data);
-    await loadUserFromCookies(); // Carrega os dados do usuário após o login
-    router.push("/home");
+    try {
+      console.log("Attempting login with data:", data);
+      const response = await authAPI.login(data);
+      console.log("Login response:", response);
+      
+      // Se a resposta for null ou vazia, considerar como sucesso
+      // (alguns servidores não retornam dados no login, apenas definem cookies)
+      await loadUserFromCookies(); // Carrega os dados do usuário após o login
+      // O redirecionamento será feito automaticamente pelo useEffect acima
+    } catch (error: any) {
+      console.error("Erro no login:", error);
+      if (error.name === 'TypeError' && error.message.includes('fetch')) {
+        throw new Error("Não foi possível conectar ao servidor. Verifique se o backend está rodando.");
+      }
+      throw error;
+    }
   };
 
   const register = async (data: any) => {
-    await api.post("/api/Users", data);
+    await authAPI.register(data);
     router.push("/login");
   };
 
   const logout = async () => {
     try {
       // Endpoint para fazer logout no backend e limpar o cookie
-      await api.post("/auth/logout");
+      await authAPI.logout();
     } catch (error) {
         console.error("Logout failed", error)
     } finally {
@@ -76,7 +127,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   return (
     <AuthContext.Provider
-      value={{ isAuthenticated: !!user, user, login, logout, register }}
+      value={{ isAuthenticated: !!user, user, isLoading, login, logout, register }}
     >
       {children}
     </AuthContext.Provider>
