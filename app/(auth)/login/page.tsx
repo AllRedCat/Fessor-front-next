@@ -26,7 +26,7 @@ const LoginPage = () => {
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50">
       <div className="max-w-md w-full space-y-8 p-8 bg-white rounded-lg shadow">
-        <h1 className="text-2xl font-bold text-center">Login</h1>
+        <h1 className="text-2xl font-bold text-center text-black">Login</h1>
         
         {error && (
           <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded">
@@ -61,6 +61,7 @@ const LoginPage = () => {
             {isLoading ? "Fazendo login..." : "Login"}
           </button>
         </form>
+        <a className="text-sky-500" href="/register">Registre-se</a>
       </div>
     </div>
   );
