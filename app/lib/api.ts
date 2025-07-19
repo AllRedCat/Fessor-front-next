@@ -64,4 +64,51 @@ export const authAPI = {
     method: 'POST',
     body: JSON.stringify(data),
   }),
+};
+
+// Funções para relatórios
+export const reportsAPI = {
+  // Criar novo relatório
+  create: (data: any) => apiRequest("/api/reports", {
+    method: 'POST',
+    body: JSON.stringify(data),
+  }),
+  
+  // Listar relatórios do usuário
+  list: () => apiRequest("/api/reports"),
+  
+  // Obter relatório específico
+  get: (id: string) => apiRequest(`/api/reports/${id}`),
+  
+  // Download do relatório em PDF
+  download: (id: string) => apiRequest(`/api/reports/${id}/download`),
+};
+
+// Funções para perfil do usuário
+export const profileAPI = {
+  // Obter perfil do usuário
+  get: () => apiRequest("/api/profile"),
+  
+  // Atualizar perfil do usuário
+  update: (data: any) => apiRequest("/api/profile", {
+    method: 'PUT',
+    body: JSON.stringify(data),
+  }),
+};
+
+// Funções para assinatura/planos
+export const subscriptionAPI = {
+  // Fazer upgrade do plano
+  upgrade: (data: any) => apiRequest("/api/subscription/upgrade", {
+    method: 'POST',
+    body: JSON.stringify(data),
+  }),
+  
+  // Obter informações da assinatura
+  get: () => apiRequest("/api/subscription"),
+  
+  // Cancelar assinatura
+  cancel: () => apiRequest("/api/subscription/cancel", {
+    method: 'POST',
+  }),
 }; 

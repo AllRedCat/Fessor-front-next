@@ -32,7 +32,7 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 const publicRoutes = ["/login", "/register"];
 
 // Rotas que precisam de autenticação
-const protectedRoutes = ["/home"];
+const protectedRoutes = ["/home", "/history", "/profile"];
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
