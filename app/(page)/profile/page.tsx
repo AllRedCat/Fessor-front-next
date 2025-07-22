@@ -78,7 +78,7 @@ export default function ProfilePage() {
     const fetchProfile = async () => {
         try {
             setLoading(true);
-            const response = await apiRequest("/api/profile");
+            const response = await apiRequest("/api/me");
             if (response) {
                 setProfile(response);
                 setEditForm({
@@ -127,7 +127,7 @@ export default function ProfilePage() {
                 updateData.newPassword = editForm.newPassword;
             }
 
-            const response = await apiRequest("/api/profile", {
+            const response = await apiRequest(`/api/users/${profile?.id}`, {
                 method: 'PUT',
                 body: JSON.stringify(updateData),
             });
@@ -261,7 +261,7 @@ export default function ProfilePage() {
                                     )}
                                     
                                     {/* Barra de Progresso */}
-                                    <div className="mt-4">
+                                    {/* <div className="mt-4">
                                         <div className="flex justify-between text-xs text-gray-600 mb-1">
                                             <span>Uso do mês</span>
                                             <span>{Math.round((profile?.reportsUsed || 0) / (profile?.reportsLimit || 1) * 100)}%</span>
@@ -274,7 +274,7 @@ export default function ProfilePage() {
                                                 }}
                                             ></div>
                                         </div>
-                                    </div>
+                                    </div> */}
                                     
                                     {profile?.plan === 'free' && (
                                         <button
@@ -306,7 +306,7 @@ export default function ProfilePage() {
                                         value={editForm.name}
                                         onChange={handleInputChange}
                                         required
-                                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                        className="w-full px-3 py-2 text-neutral-800 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                                     />
                                 </div>
 
@@ -321,7 +321,7 @@ export default function ProfilePage() {
                                         value={editForm.email}
                                         onChange={handleInputChange}
                                         required
-                                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                        className="w-full px-3 py-2 text-neutral-800 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                                     />
                                 </div>
 
@@ -339,7 +339,7 @@ export default function ProfilePage() {
                                                 name="currentPassword"
                                                 value={editForm.currentPassword}
                                                 onChange={handleInputChange}
-                                                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                                className="w-full px-3 text-neutral-800 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                                             />
                                         </div>
 
@@ -353,7 +353,7 @@ export default function ProfilePage() {
                                                 name="newPassword"
                                                 value={editForm.newPassword}
                                                 onChange={handleInputChange}
-                                                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                                className="w-full px-3 py-2 text-neutral-800 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                                             />
                                         </div>
 
@@ -367,7 +367,7 @@ export default function ProfilePage() {
                                                 name="confirmPassword"
                                                 value={editForm.confirmPassword}
                                                 onChange={handleInputChange}
-                                                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                                className="w-full px-3 py-2 text-neutral-800 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                                             />
                                         </div>
                                     </div>

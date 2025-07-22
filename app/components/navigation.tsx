@@ -73,7 +73,7 @@ export default function Navigation() {
                             </div>
                             <div className="ml-3 flex-1 min-w-0">
                                 <p className="text-sm font-medium text-gray-900 truncate">
-                                    {user?.name}
+                                    {user?.name?.split(' ')[0]}
                                 </p>
                                 <p className="text-sm text-gray-500 truncate">
                                     {user?.email}
@@ -172,7 +172,7 @@ export default function Navigation() {
                             </div>
                             <div className="ml-3 flex-1 min-w-0">
                                 <p className="text-sm font-medium text-gray-900 truncate">
-                                    {user?.name}
+                                    {user?.name?.split(' ')[0]}
                                 </p>
                                 <p className="text-sm text-gray-500 truncate">
                                     {user?.email}

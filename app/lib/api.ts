@@ -60,7 +60,7 @@ export const authAPI = {
   
   me: () => apiRequest("/api/me"),
   
-  register: (data: any) => apiRequest("/api/Users", {
+  register: (data: any) => apiRequest("/auth/register", {
     method: 'POST',
     body: JSON.stringify(data),
   }),
